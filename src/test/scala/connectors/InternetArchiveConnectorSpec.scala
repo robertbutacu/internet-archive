@@ -15,17 +15,17 @@ class InternetArchiveConnectorSpec extends WordSpec with MustMatchers {
   val blocker:      Blocker          = Blocker.liftExecutorService(blockingPool)
   val httpClient:   Client[IO]       = JavaNetClientBuilder[IO](blocker).create
 
-  val service: InternetArchiveConnectorAlgebra[IO] = new InternetArchiveConnector[IO](httpClient)
+  val connector: InternetArchiveConnectorAlgebra[IO] = new InternetArchiveConnector[IO](httpClient)
 
   "retrieveMetadata" should {
     "correctly retrieve metadata" in {
-      service.retrieveMetadata("electricsheep-flock-244-32500-3").unsafeRunSync().get must matchPattern {
+      connector.retrieveMetadata("electricsheep-flock-244-32500-3").unsafeRunSync().get must matchPattern {
         case _: InternetArchiveMetadata =>
       }
     }
 
     "correctly fail to retrieve metadata" in {
-      service.retrieveMetadata("some-unknown-metadata-name").unsafeRunSync() mustBe None
+      connector.retrieveMetadata("some-unknown-metadata-name").unsafeRunSync() mustBe None
     }
   }
 }
