@@ -1,16 +1,13 @@
 import java.util.concurrent.{ExecutorService, Executors}
 
-import cats.effect.{Blocker, ContextShift, ExitCode, IO, IOApp}
+import cats.effect.{Blocker, ExitCode, IO, IOApp}
 import connectors.{InternetArchiveConnector, InternetArchiveConnectorAlgebra}
 import org.http4s.client.{Client, JavaNetClientBuilder}
 import services._
 import cats.syntax.all._
 
-import scala.concurrent.ExecutionContext
-
 object Main extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
-    implicit val cs:  ContextShift[IO] = IO.contextShift(ExecutionContext.global)
     val blockingPool: ExecutorService  = Executors.newFixedThreadPool(5)
     val blocker:      Blocker          = Blocker.liftExecutorService(blockingPool)
     val httpClient:   Client[IO]       = JavaNetClientBuilder[IO](blocker).create
