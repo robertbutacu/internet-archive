@@ -8,7 +8,7 @@ trait ThumbnailCreatorServiceAlgebra[F[_]] {
   def createThumbnail(videoPath: String, time: Int): F[Either[BusinessError, Unit]]
 }
 
-class ThumbnailCreatorService[F[_]](ffmpegService:          FFMpegServiceAlgebra[F],
+class ThumbnailCreatorService[F[_]](ffmpegService:          FFMpegServiceAlgebra,
                                     internetArchiveService: InternetArchiveServiceAlgebra[F])
                                    (implicit M: Monad[F])
   extends ThumbnailCreatorServiceAlgebra[F] {
@@ -16,7 +16,7 @@ class ThumbnailCreatorService[F[_]](ffmpegService:          FFMpegServiceAlgebra
     (
       for {
         _ <- EitherT(internetArchiveService.isVideoCorrupted(videoPath))
-        _ <- EitherT(ffmpegService.createThumbnail(videoPath, time, Int.MaxValue))
+        _ <- EitherT.pure(ffmpegService.createThumbnail(videoPath, time, Int.MaxValue))
       } yield ()
     ).value
   }

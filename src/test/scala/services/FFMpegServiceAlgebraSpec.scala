@@ -3,12 +3,11 @@ package services
 import java.io.File
 
 import base.TestData
-import cats.Id
 import models.{VideoFileDoesNotExist, ThumbnailFileAlreadyExists}
 import org.scalatest.{MustMatchers, WordSpec}
 
 class FFMpegServiceAlgebraSpec extends WordSpec with MustMatchers with TestData {
-  val service: FFMpegService[Id] = new FFMpegService[Id]
+  val service: FFMpegService = new FFMpegService
 
   "movieFileExists" should {
     "be successful if the movie file does exist" in {

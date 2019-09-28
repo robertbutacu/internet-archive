@@ -5,26 +5,24 @@ import java.net.URI
 import models._
 import java.nio.file.{Files, Paths}
 
-import cats.Applicative
-
-trait FFMpegServiceAlgebra[F[_]] {
-  def createThumbnail(videoPath: String, time: Int, videoLength: Int): F[Either[BusinessError, Unit]]
+trait FFMpegServiceAlgebra {
+  def createThumbnail(videoPath: String, time: Int, videoLength: Int): Either[BusinessError, Unit]
 }
 
-class FFMpegService[F[_]](implicit A: Applicative[F]) extends FFMpegServiceAlgebra[F] {
+class FFMpegService() extends FFMpegServiceAlgebra {
   //both of these should come from config or user
   val thumbnailPath = s"${System.getProperty("user.dir")}/thumbnail-result.png"
   val thumbnailResolution = "600x480"
 
   // there should be a better way to get movie length other than checking and passing from InternetArchive metadata file
   // also, Validated might be a better choice for the required preconditions
-  override def createThumbnail(videoPath: String, time: Int, videoLength: Int): F[Either[BusinessError, Unit]] = {
-    A.pure(for {
+  override def createThumbnail(videoPath: String, time: Int, videoLength: Int): Either[BusinessError, Unit] = {
+    for {
       _ <- videoExists(videoPath)
       _ <- thumbnailFileDoesNotExist(thumbnailPath) // there might be an overwrite parameter, but that might caused unwanted side effects
       _ <- doesNotExtendVideoLength(time, videoLength)
       _ =  createVideoThumbnail(videoPath, time)
-    } yield ())
+    } yield ()
   }
 
   def doesNotExtendVideoLength(time: Int, movieLength: Int): Either[ExtendsVideoLength.type, Unit] = {
