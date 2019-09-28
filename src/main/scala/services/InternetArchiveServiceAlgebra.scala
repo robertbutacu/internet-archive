@@ -16,7 +16,7 @@ class InternetArchiveService[F[_]](internetArchiveConnector: InternetArchiveConn
     // this feels rather unstable - there should be a better way of getting the identifier name
     val file = new File(videoPath)
 
-    val identifier = file.getName.dropWhile(_ != '.')
+    val identifier = file.getName.takeWhile(_ != '.')
 
     internetArchiveConnector.retrieveMetadata(identifier).map {
       case None           => Left(VideoNotFoundInArchive)

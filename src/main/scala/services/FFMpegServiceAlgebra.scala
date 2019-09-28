@@ -13,10 +13,11 @@ trait FFMpegServiceAlgebra[F[_]] {
 
 class FFMpegService[F[_]](implicit A: Applicative[F]) extends FFMpegServiceAlgebra[F] {
   //both of these should come from config or user
-  val thumbnailPath = "thumbnail-result.png"
+  val thumbnailPath = s"${System.getProperty("user.dir")}/thumbnail-result.png"
   val thumbnailResolution = "600x480"
 
   // there should be a better way to get movie length other than checking and passing from InternetArchive metadata file
+  // also, Validated might be a better choice for the required preconditions
   override def createThumbnail(videoPath: String, time: Int, videoLength: Int): F[Either[BusinessError, Unit]] = {
     A.pure(for {
       _ <- videoExists(videoPath)
