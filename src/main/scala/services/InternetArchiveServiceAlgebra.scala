@@ -1,18 +1,31 @@
 package services
 
-import cats.MonadError
-import cats.effect.Sync
-import models.{BusinessError, InternetArchiveMetadata}
-import cats.syntax.functor._
-import org.http4s.InvalidMessageBodyFailure
-import org.http4s.client.Client
+import java.io.File
+
+import cats.Functor
+import connectors.InternetArchiveConnectorAlgebra
+import models.{BusinessError, InternetArchiveMetadata, VideoNotFoundInArchive}
+import cats.syntax.all._
 
 trait InternetArchiveServiceAlgebra[F[_]] {
-  def isFileCorrupted(filePath: String): F[Either[BusinessError, Unit]]
+  def isVideoCorrupted(videoPath: String): F[Either[BusinessError, Unit]]
 }
 
-class InternetArchiveService[F[_]: Sync](httpClient: Client[F],
+class InternetArchiveService[F[_]](internetArchiveConnector: InternetArchiveConnectorAlgebra[F])(implicit F: Functor[F]) extends InternetArchiveServiceAlgebra[F] {
+  override def isVideoCorrupted(videoPath: String): F[Either[BusinessError, Unit]] = {
+    // this feels rather unstable - there should be a better way of getting the identifier name
+    val file = new File(videoPath)
 
-                                        )(implicit M: MonadError[F, Throwable]) extends InternetArchiveServiceAlgebra[F] {
-  override def isFileCorrupted(filePath: String): F[Either[BusinessError, Unit]] = ???
+    val identifier = file.getName.dropWhile(_ != '.')
+
+    internetArchiveConnector.retrieveMetadata(identifier).map {
+      case None => Left(VideoNotFoundInArchive)
+      case Some(metadata) =>
+        checkMetadata(metadata, file)
+    }
+  }
+
+  def checkMetadata(internetArchiveMetadata: InternetArchiveMetadata, file: File): Either[BusinessError, Unit] = {
+    Right(())
+  }
 }

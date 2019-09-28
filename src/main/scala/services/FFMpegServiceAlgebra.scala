@@ -2,13 +2,13 @@ package services
 
 import java.net.URI
 
-import models.{ThumbnailCreationFailure, _}
+import models._
 import java.nio.file.{Files, Paths}
 
 import cats.Applicative
 
 trait FFMpegServiceAlgebra[F[_]] {
-  def createThumbnail(filePath: String, time: Int, movieLength: Int): F[Either[BusinessError, Unit]]
+  def createThumbnail(videoPath: String, time: Int, videoLength: Int): F[Either[BusinessError, Unit]]
 }
 
 class FFMpegService[F[_]](implicit A: Applicative[F]) extends FFMpegServiceAlgebra[F] {
@@ -17,28 +17,28 @@ class FFMpegService[F[_]](implicit A: Applicative[F]) extends FFMpegServiceAlgeb
   val thumbnailResolution = "600x480"
 
   // there should be a better way to get movie length other than checking and passing from InternetArchive metadata file
-  override def createThumbnail(filePath: String, time: Int, movieLength: Int): F[Either[BusinessError, Unit]] = {
+  override def createThumbnail(videoPath: String, time: Int, videoLength: Int): F[Either[BusinessError, Unit]] = {
     A.pure(for {
-      _ <- movieFileExists(filePath)
+      _ <- videoExists(videoPath)
       _ <- thumbnailFileDoesNotExist(thumbnailPath)
-      _ <- doesNotExtendMovieLength(time, movieLength)
-      _ =  createFileThumbnail(filePath, time)
+      _ <- doesNotExtendVideoLength(time, videoLength)
+      _ =  createVideoThumbnail(videoPath, time)
     } yield ())
   }
 
-  def doesNotExtendMovieLength(time: Int, movieLength: Int): Either[ExtendsMovieLength.type, Unit] = {
+  def doesNotExtendVideoLength(time: Int, movieLength: Int): Either[ExtendsVideoLength.type, Unit] = {
     Either.cond(
       time <= movieLength,
       (),
-      ExtendsMovieLength
+      ExtendsVideoLength
     )
   }
 
-  def movieFileExists(filePath: String): Either[MovieFileDoesNotExist.type, Unit] = {
+  def videoExists(filePath: String): Either[VideoFileDoesNotExist.type, Unit] = {
     Either.cond(
       Files.exists(Paths.get(new URI(s"file:///$filePath"))),
       (),
-      MovieFileDoesNotExist
+      VideoFileDoesNotExist
     )
   }
 
@@ -50,7 +50,7 @@ class FFMpegService[F[_]](implicit A: Applicative[F]) extends FFMpegServiceAlgeb
     )
   }
 
-  def createFileThumbnail(filePath: String, time: Int): Unit = {
+  def createVideoThumbnail(filePath: String, time: Int): Unit = {
     import sys.process._
     import scala.language.postfixOps
 

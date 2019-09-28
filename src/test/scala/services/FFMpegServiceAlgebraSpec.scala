@@ -2,20 +2,21 @@ package services
 
 import java.io.File
 
+import base.TestData
 import cats.Id
-import models.{MovieFileDoesNotExist, ThumbnailFileAlreadyExists}
+import models.{VideoFileDoesNotExist, ThumbnailFileAlreadyExists}
 import org.scalatest.{MustMatchers, WordSpec}
 
-class FFMpegServiceAlgebraSpec extends WordSpec with MustMatchers {
+class FFMpegServiceAlgebraSpec extends WordSpec with MustMatchers with TestData {
   val service: FFMpegService[Id] = new FFMpegService[Id]
 
   "movieFileExists" should {
     "be successful if the movie file does exist" in {
-      service.movieFileExists(s"${System.getProperty("user.dir")}/resources/some-file") mustBe Right(())
+      service.videoExists(s"${System.getProperty("user.dir")}/resources/some-file") mustBe Right(())
     }
 
     "fail with a MovieFileDoesNotExist error if the file does not exist" in {
-      service.movieFileExists("some-invalid-path") mustBe Left(MovieFileDoesNotExist)
+      service.videoExists("some-invalid-path") mustBe Left(VideoFileDoesNotExist)
     }
   }
 
@@ -31,11 +32,9 @@ class FFMpegServiceAlgebraSpec extends WordSpec with MustMatchers {
 
   "createFileThumbnail" should {
     "be successful and create the thumbnail" in {
-      val testMoviePath = s"${System.getProperty("user.dir")}/resources/avOEPKq_460svvp9.mp4"
+      new File(thumbnailPath).delete()
 
-      new File(s"${System.getProperty("user.dir")}/thumbnail-result.png").delete()
-
-      service.createFileThumbnail(testMoviePath, 60) mustBe ()
+      service.createVideoThumbnail(videoPath, 60) mustBe ()
     }
   }
 }
