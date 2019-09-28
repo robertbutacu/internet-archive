@@ -18,15 +18,14 @@ object Main extends IOApp {
     val internetArchiveConnector: InternetArchiveConnectorAlgebra[IO] = new InternetArchiveConnector[IO](httpClient)
     val internalArchiveService:   InternetArchiveServiceAlgebra[IO]   = new InternetArchiveService[IO](internetArchiveConnector)
 
-    val ffmpegService: FFMpegServiceAlgebra[IO] = new FFMpegService[IO]
-
+    val ffmpegService:           FFMpegServiceAlgebra[IO]           = new FFMpegService[IO]
     val thumbnailCreatorService: ThumbnailCreatorServiceAlgebra[IO] = new ThumbnailCreatorService[IO](ffmpegService, internalArchiveService)
 
     val videoPath = args(0)
     val time      = args(1).toInt
 
     thumbnailCreatorService.createThumbnail(videoPath, time).flatMap {
-      case Left(err) => IO(println(s"There has been an error: $err")).as(ExitCode.Error)
+      case Left(err) => IO(println(s"There has been an error: $err")).as(ExitCode.Error) // ideally, there would be a pretty printed version of BusinessError
       case Right(()) => IO(println("The thumbnail has been successfully created")).as(ExitCode.Success)
     }
   }
