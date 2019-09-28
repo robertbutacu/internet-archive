@@ -1,5 +1,7 @@
 package services
 
+import java.io.File
+
 import cats.Id
 import models.{MovieFileDoesNotExist, ThumbnailFileAlreadyExists}
 import org.scalatest.{MustMatchers, WordSpec}
@@ -30,6 +32,9 @@ class FFMpegServiceAlgebraSpec extends WordSpec with MustMatchers {
   "createFileThumbnail" should {
     "be successful and create the thumbnail" in {
       val testMoviePath = s"${System.getProperty("user.dir")}/resources/avOEPKq_460svvp9.mp4"
+
+      new File(s"${System.getProperty("user.dir")}/thumbnail-result.png").delete()
+
       service.createFileThumbnail(testMoviePath, 60) mustBe ()
     }
   }
