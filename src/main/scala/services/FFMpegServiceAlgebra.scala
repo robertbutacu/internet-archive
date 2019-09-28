@@ -20,7 +20,7 @@ class FFMpegService[F[_]](implicit A: Applicative[F]) extends FFMpegServiceAlgeb
   override def createThumbnail(videoPath: String, time: Int, videoLength: Int): F[Either[BusinessError, Unit]] = {
     A.pure(for {
       _ <- videoExists(videoPath)
-      _ <- thumbnailFileDoesNotExist(thumbnailPath)
+      _ <- thumbnailFileDoesNotExist(thumbnailPath) // there might be an overwrite parameter, but that might caused unwanted side effects
       _ <- doesNotExtendVideoLength(time, videoLength)
       _ =  createVideoThumbnail(videoPath, time)
     } yield ())

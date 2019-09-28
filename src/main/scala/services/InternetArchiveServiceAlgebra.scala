@@ -19,7 +19,7 @@ class InternetArchiveService[F[_]](internetArchiveConnector: InternetArchiveConn
     val identifier = file.getName.dropWhile(_ != '.')
 
     internetArchiveConnector.retrieveMetadata(identifier).map {
-      case None => Left(VideoNotFoundInArchive)
+      case None           => Left(VideoNotFoundInArchive)
       case Some(metadata) =>
         checkMetadata(metadata, file)
     }
