@@ -15,7 +15,7 @@ object Main extends IOApp {
     val internetArchiveConnector: InternetArchiveConnectorAlgebra[IO] = new InternetArchiveConnector[IO](httpClient)
     val internalArchiveService:   InternetArchiveServiceAlgebra[IO]   = new InternetArchiveService[IO](internetArchiveConnector)
 
-    val ffmpegService:           FFMpegServiceAlgebra[IO]           = new FFMpegService[IO]
+    val ffmpegService:           FFMpegServiceAlgebra               = new FFMpegService
     val thumbnailCreatorService: ThumbnailCreatorServiceAlgebra[IO] = new ThumbnailCreatorService[IO](ffmpegService, internalArchiveService)
 
     // there could be some better handling of these arguments

@@ -16,7 +16,7 @@ class ThumbnailCreatorService[F[_]](ffmpegService:          FFMpegServiceAlgebra
     (
       for {
         _ <- EitherT(internetArchiveService.isVideoCorrupted(videoPath))
-        _ <- EitherT.pure(ffmpegService.createThumbnail(videoPath, time, Int.MaxValue))
+        _ <- EitherT.fromEither(ffmpegService.createThumbnail(videoPath, time, Int.MaxValue))
       } yield ()
     ).value
   }
