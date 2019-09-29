@@ -6,7 +6,7 @@ import models._
 import java.nio.file.{Files, Paths}
 
 trait FFMpegServiceAlgebra {
-  def createThumbnail(videoPath: String, time: Int, videoLength: Int): Either[BusinessError, Unit]
+  def createThumbnail(videoPath: String, time: Double, videoLength: Double): Either[BusinessError, Unit]
 }
 
 class FFMpegService() extends FFMpegServiceAlgebra {
@@ -16,7 +16,7 @@ class FFMpegService() extends FFMpegServiceAlgebra {
 
   // there should be a better way to get movie length other than checking and passing from InternetArchive metadata file
   // also, Validated might be a better choice for the required preconditions
-  override def createThumbnail(videoPath: String, time: Int, videoLength: Int): Either[BusinessError, Unit] = {
+  override def createThumbnail(videoPath: String, time: Double, videoLength: Double): Either[BusinessError, Unit] = {
     for {
       _ <- videoExists(videoPath)
       _ <- thumbnailFileDoesNotExist(thumbnailPath) // there might be an overwrite parameter, but that might caused unwanted side effects
@@ -25,7 +25,7 @@ class FFMpegService() extends FFMpegServiceAlgebra {
     } yield ()
   }
 
-  def doesNotExtendVideoLength(time: Int, movieLength: Int): Either[ExtendsVideoLength.type, Unit] = {
+  def doesNotExtendVideoLength(time: Double, movieLength: Double): Either[ExtendsVideoLength.type, Unit] = {
     Either.cond(
       time <= movieLength,
       (),
@@ -49,7 +49,7 @@ class FFMpegService() extends FFMpegServiceAlgebra {
     )
   }
 
-  def createVideoThumbnail(filePath: String, time: Int): Unit = {
+  def createVideoThumbnail(filePath: String, time: Double): Unit = {
     import sys.process._
     import scala.language.postfixOps
 

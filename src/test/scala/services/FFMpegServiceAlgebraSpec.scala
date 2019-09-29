@@ -33,7 +33,7 @@ class FFMpegServiceAlgebraSpec extends WordSpec with MustMatchers with TestData 
     "be successful and create the thumbnail" in {
       new File(thumbnailPath).delete()
 
-      service.createVideoThumbnail(videoPath, 60) mustBe ()
+      service.createVideoThumbnail(videoPath, 60.0) mustBe ()
     }
   }
 }

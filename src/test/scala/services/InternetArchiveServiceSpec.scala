@@ -11,7 +11,11 @@ class InternetArchiveServiceSpec extends WordSpec with MustMatchers with TestDat
     override def retrieveMetadata(resourceName: String): Id[Option[InternetArchiveMetadata]] = None
   }
 
-  "isFileCorrupted" should {
+  val connectorWithDataRetrieved: InternetArchiveConnectorAlgebra[Id] = new InternetArchiveConnectorAlgebra[Id]() {
+    override def retrieveMetadata(resourceName: String): Id[Option[InternetArchiveMetadata]] = Option(InternetArchiveMetadata(List.empty))
+  }
+
+  "isVideoCorrupted" should {
     "fail when the video does not exist in the InternetArchive" in {
       val service = new InternetArchiveService[Id](connectorWithNoDataRetrieved)
       service.isVideoCorrupted(videoPath) mustBe Left(VideoNotFoundInArchive)

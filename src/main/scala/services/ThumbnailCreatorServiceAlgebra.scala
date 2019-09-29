@@ -15,8 +15,9 @@ class ThumbnailCreatorService[F[_]](ffmpegService:          FFMpegServiceAlgebra
   override def createThumbnail(videoPath: String, time: Int): F[Either[BusinessError, Unit]] = {
     (
       for {
-        _ <- EitherT(internetArchiveService.isVideoCorrupted(videoPath))
-        _ <- EitherT.fromEither(ffmpegService.createThumbnail(videoPath, time, Int.MaxValue))
+        fileMetadata <- EitherT(internetArchiveService.isVideoCorrupted(videoPath))
+        // by default, duration is 0 - debatable as to what should be the value
+        _            <- EitherT.fromEither(ffmpegService.createThumbnail(videoPath, time.toDouble, fileMetadata.length.getOrElse(0.0)))
       } yield ()
     ).value
   }

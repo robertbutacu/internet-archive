@@ -8,3 +8,5 @@ case object ThumbnailFileAlreadyExists extends BusinessError
 case object CorruptedVideoData         extends BusinessError
 case object ThumbnailCreationFailure   extends BusinessError
 case object VideoNotFoundInArchive     extends BusinessError
+case object VideoNotFoundInMetadata    extends BusinessError
+case object FileReadingException       extends BusinessError

@@ -19,6 +19,7 @@ object Main extends IOApp {
     val thumbnailCreatorService: ThumbnailCreatorServiceAlgebra[IO] = new ThumbnailCreatorService[IO](ffmpegService, internalArchiveService)
 
     // there could be some better handling of these arguments
+    // a CMD library like scopt can be used
     val videoPath = args(0)
     val time      = args(1).toInt
 
